@@ -13,6 +13,10 @@ export default {
   name: 'HomeView',
   components: {
     HelloWorld
+  },
+  mounted(){
+    this.$store.dispatch('fetchUsers');
   }
+  
 }
 </script>
