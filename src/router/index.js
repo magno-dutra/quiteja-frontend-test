@@ -1,15 +1,25 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import UserList from '../views/UserList.vue';
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'home',
     component: HomeView
   },
+  {
+    name: 'users',
+    path: '/usuarios',
+    component: UserList
+  },   
+  {
+    name: 'edit-user',
+    path: '/usuarios/:id',
+    props: true,
+  }
 ]
 
 const router = new VueRouter({

@@ -1,8 +1,19 @@
-<template>
+<template>  
   <div id="app">
+    <the-heading></the-heading>
     <router-view/>
   </div>
 </template>
+
+<script>
+import TheHeading from '@/components/layout/TheHeading.vue';
+
+export default {
+  components: {
+    TheHeading,
+  }
+}
+</script>
 
 <style lang="scss">
 #app {
