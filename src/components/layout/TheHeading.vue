@@ -5,7 +5,7 @@
       <h1>Teste QuiteJá</h1>
     </div>
     <nav>
-      <router-link to="/">Home</router-link>
+      <router-link to="/home">Home</router-link>
       <router-link to="/usuarios">Usuários</router-link>
     </nav>
   </header>

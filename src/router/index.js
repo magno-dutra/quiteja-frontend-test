@@ -2,12 +2,17 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import UserList from '../views/UserList.vue';
+import UserDetails from '../views/UserDetails.vue';
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
+    redirect: '/home',
+  },
+  {
+    path: '/home',
     component: HomeView
   },
   {
@@ -19,6 +24,7 @@ const routes = [
     name: 'edit-user',
     path: '/usuarios/:id',
     props: true,
+    component: UserDetails,
   }
 ]
 

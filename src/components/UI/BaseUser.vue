@@ -6,7 +6,7 @@
           <img :src="url" alt="" />
           <h2>{{ fullName }}</h2>
         </div>
-        <router-link :to="editUserLink">Ver mais...</router-link>
+        <base-button link :to="editUserLink">Ver mais...</base-button>
       </article>
     </base-card>
   </li>

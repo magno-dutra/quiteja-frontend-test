@@ -30,6 +30,6 @@ export default{
       });
 
       context.commit('loadUsers', users.data.data);
-    }
+    },
   },
 }
