@@ -1,5 +1,6 @@
 <template>
   <main>
+    <base-button link :to="'/usuarios/create'">Criar Usuário</base-button>
     <ul>
       <base-user
         v-for="user in allUsers"

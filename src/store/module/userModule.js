@@ -19,11 +19,15 @@ export default{
     }
   },
   actions: {
-    async fetchUsers(context){
+    async fetchUsers(context, payload = 0){
       const apiKey = process.env.VUE_APP_ID;
       
       // try catch
       const users = await axios.get('https://dummyapi.io/data/v1/user', {
+        params: {
+          page: payload.page,
+          limit: '10',
+        },
         headers: {
           'app-id': apiKey
         }

@@ -35,7 +35,7 @@
               <option value="female" :selected="selectedUser.gender === 'female'">Female</option>
               <option value="other" :selected="selectedUser.gender === 'other'">Other</option>
             </select>
-            <input type="email" :value="selectedUser.email" class="input-user-email" ref="inputEmail">
+            <p>{{ selectedUser.email }}</p>
             <input type="date" :value="userBirthday" class="input-user-date" ref="inputBirthday">
             <input type="tel" :value="selectedUser.phone" ref="inputPhone">
             <input type="text" :value="selectedUser.location.street" ref="inputStreet">
@@ -46,9 +46,10 @@
         </div>
       </div>
       <div class="action-box">
-        <base-button class="action-button" @click="editUser" v-if="!edit">Editar</base-button>
+        <base-button class="action-button" @click="toggleEdit" v-if="!edit">Editar</base-button>
         <base-button class="action-button" @click="saveChanges" v-if="edit">Salvar</base-button>
-        <base-button class="action-button" @click="editUser">Excluir</base-button>
+        <base-button class="action-button" @click="deleteUser" v-if="!edit">Excluir</base-button>
+        <base-button class="action-button" @click="toggleEdit" v-if="edit">Cancelar</base-button>
       </div>
     </div>
   </base-card>
@@ -74,12 +75,6 @@ export default {
       
       return `${title} ${firstName} ${lastName}`;
     },
-    /* nameWithoutTitle(){
-      const firstName = this.selectedUser.firstName.charAt(0).toUpperCase() + this.selectedUser.firstName.slice(1);
-      const lastName = this.selectedUser.lastName.charAt(0).toUpperCase() + this.selectedUser.lastName.slice(1);
-      
-      return `${firstName} ${lastName}`;
-    },     */
     userGender(){
       const gender = this.selectedUser.gender.charAt(0).toUpperCase() + this.selectedUser.gender.slice(1);
 
@@ -90,16 +85,26 @@ export default {
     },
   },
   methods: {
-    editUser(){
-      this.edit = true;      
+    async deleteUser(){
+      const apiKey = process.env.VUE_APP_ID;
+
+      await axios.delete('https://dummyapi.io/data/v1/user/' + this.id, {
+        headers: {
+          'app-id': apiKey,          
+        }
+      });
+
+      this.$router.push('/usuarios');
     },
-    saveChanges(){
+    toggleEdit(){
+      this.edit = !this.edit;      
+    },
+    async saveChanges(){
       const updatedUser = {
         title: this.$refs.selectTitle.value,
         firstName: this.$refs.inputFirstName.value,
         lastName: this.$refs.inputLastName.value,
         gender: this.$refs.selectGender.value,
-        email: this.$refs.inputEmail.value,
         dateOfBirth: this.$refs.inputBirthday.value,
         phone: this.$refs.inputPhone.value,
         location: {
@@ -109,8 +114,18 @@ export default {
           country: this.$refs.inputCountry.value,
         }        
       };
+      
 
-      console.log(updatedUser);
+      const apiKey = process.env.VUE_APP_ID;
+
+      await axios.put('https://dummyapi.io/data/v1/user/' + this.id, updatedUser, {
+        headers: {
+          'app-id': apiKey,          
+        }
+      });
+
+      this.getUser();
+
       this.edit = false;
     },
     async getUser(){
