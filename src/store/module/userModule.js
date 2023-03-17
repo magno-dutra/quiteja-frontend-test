@@ -1,5 +1,9 @@
 import axios from 'axios';
 
+const headers = {
+  'app-id': process.env.VUE_APP_ID
+}
+
 export default{
   namespaced: true,
   state: {
@@ -9,9 +13,6 @@ export default{
     allUsers(state){
       return state.users;
     },
-    usersLength(state){
-      return state.users.length;
-    }
   },
   mutations: {
     loadUsers(state, payload){
@@ -20,17 +21,15 @@ export default{
   },
   actions: {
     async fetchUsers(context, payload = 0){
-      const apiKey = process.env.VUE_APP_ID;
       
       // try catch
       const users = await axios.get('https://dummyapi.io/data/v1/user', {
+        headers,
         params: {
-          page: payload.page,
-          limit: '10',
+          page: payload || payload.page,
+          limit: '12',
         },
-        headers: {
-          'app-id': apiKey
-        }
+        
       });
 
       context.commit('loadUsers', users.data.data);

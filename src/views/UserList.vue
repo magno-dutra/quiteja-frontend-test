@@ -1,10 +1,16 @@
-<template>
-  <main>
-    <base-button link :to="'/usuarios/create'">Criar Usuário</base-button>
-    <ul>
-      <base-user
-        v-for="user in allUsers"
-        :key="user.id"
+<template>   
+  <v-container>
+    <v-row class="fill-height ma-0" justify="center" v-if="isLoading">
+      <v-col cols="auto">
+        <v-progress-circular      
+          indeterminate
+          color="blue"
+        ></v-progress-circular>
+      </v-col>
+    </v-row>
+    <v-row v-else>
+      <v-col v-for="user in users" :key="user.id" cols="12" sm="6" md="4">
+        <base-user
         :id="user.id"
         :title="user.title"
         :first-name="user.firstName"
@@ -12,8 +18,9 @@
         :url="user.picture"
       >
       </base-user>
-    </ul>
-  </main>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
@@ -25,21 +32,19 @@ export default {
   },
   data() {
     return {
-      users: [],
+      isLoading: false,
     };
   },
   computed: {
-    allUsers(){
-      if(this.users.length !== this.$store.getters["userModule/usersLength"]){
-        this.fetchUsers();
-      }
-      return this.users;
+    users(){
+      return this.$store.getters["userModule/allUsers"];
     }
   },
   methods: {
-    fetchUsers(){
-      this.$store.dispatch("userModule/fetchUsers");
-      this.users = this.$store.getters["userModule/allUsers"];
+    async fetchUsers(){
+      this.isLoading = true;
+      await this.$store.dispatch("userModule/fetchUsers");
+      this.isLoading = false;
     }
   },
   created() {
@@ -48,20 +53,4 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>
+

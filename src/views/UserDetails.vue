@@ -1,70 +1,71 @@
 <template>
-  <base-card>
-    <div v-if="loading">Carregando...</div>
-    <div  v-else>
-      <div class="user-box">
-        <div class="profile-picture">
-          <img :src="selectedUser.picture" alt="">  
+  <div>    
+    <v-container>
+      <v-card loading v-if="loading">
+        <v-skeleton-loader
+        type="article, actions"
+          ></v-skeleton-loader>
+      </v-card>
+      <v-card class="d-flex" v-else>
+        <v-flex shrink>
+          <v-img :src="selectedUser.picture" contain class="mt-6 ml-2 rounded-circle"></v-img>
+        </v-flex>
+        <section class="d-flex flex-column">
+          <v-card-title>{{ fullName }}</v-card-title>
+          <v-card-text>
+            <p>Gender: {{ userGender }}</p>
+            <p>Email: {{ selectedUser.email }}</p>
+            <p>Date of Birth: {{ userBirthday }}</p>
+            <p>Phone Number: {{ selectedUser.phone }}</p>
+            <p>Address: {{ selectedUser.location.street }}, {{ selectedUser.location.city }}, {{ selectedUser.location.state }}, {{ selectedUser.location.country }}</p>
+          </v-card-text>
+        </section>
+        <v-spacer></v-spacer>
+        <v-card-actions>      
+          <v-btn text @click="toggleEdit">Edit</v-btn>
+          <v-btn text @click="toggleDelete">Delete</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-container>
+
+    <form-dialog v-if="edit" :user="selectedUser" @close-dialog="toggleEdit" @save-changes="saveChanges"></form-dialog>
+
+    <v-dialog v-model="confirmDelete" persistent max-width="500px">
+    <v-card class="pa-6">
+      <v-card-text class=" d-flex justify-center">
+        <div class="text-body-1">
+          {{ dialogText }}
         </div>
-        <div class="user-data" v-if="!edit">
-          <h2>{{ fullName }}</h2>
-          <p>{{ userGender }}</p>
-          <p>{{ selectedUser.email }}</p>
-          <p>{{ userBirthday }}</p>
-          <p>{{ selectedUser.phone }}</p>   
-          <p>{{ selectedUser.location.street }}</p>
-          <p>{{ selectedUser.location.city }}</p>
-          <p>{{ selectedUser.location.state }}</p>
-          <p>{{ selectedUser.location.country }}</p> 
-        </div>
-        <div class="user-data" v-else>
-          <form class="edit-form">
-            <div class="name-box">
-              <select name="title" id="title" ref="selectTitle">
-                <option value="mr" :selected="selectedUser.title === 'mr'">Mr</option>
-                <option value="ms" :selected="selectedUser.title === 'ms'">Ms</option>
-                <option value="mrs" :selected="selectedUser.title === 'mrs'">Mrs</option>
-                <option value="miss" :selected="selectedUser.title === 'miss'">Miss</option>
-                <option value="dr" :selected="selectedUser.title === 'dr'">Dr</option>
-              </select>
-              <input type="text" :value="selectedUser.firstName" placeholder="First Name" class="input-user-name" ref="inputFirstName">
-              <input type="text" :value="selectedUser.lastName" placeholder="Last Name" class="input-user-name" ref="inputLastName">
-            </div>
-            <select id="gender" name="gender" ref="selectGender">
-              <option value="male" :selected="selectedUser.gender === 'male'">Male</option>
-              <option value="female" :selected="selectedUser.gender === 'female'">Female</option>
-              <option value="other" :selected="selectedUser.gender === 'other'">Other</option>
-            </select>
-            <p>{{ selectedUser.email }}</p>
-            <input type="date" :value="userBirthday" class="input-user-date" ref="inputBirthday">
-            <input type="tel" :value="selectedUser.phone" ref="inputPhone">
-            <input type="text" :value="selectedUser.location.street" ref="inputStreet">
-            <input type="text" :value="selectedUser.location.city" ref="inputCity">
-            <input type="text" :value="selectedUser.location.state" ref="inputState">
-            <input type="text" :value="selectedUser.location.country" ref="inputCountry">
-          </form>
-        </div>
-      </div>
-      <div class="action-box">
-        <base-button class="action-button" @click="toggleEdit" v-if="!edit">Editar</base-button>
-        <base-button class="action-button" @click="saveChanges" v-if="edit">Salvar</base-button>
-        <base-button class="action-button" @click="deleteUser" v-if="!edit">Excluir</base-button>
-        <base-button class="action-button" @click="toggleEdit" v-if="edit">Cancelar</base-button>
-      </div>
-    </div>
-  </base-card>
+      </v-card-text>
+      <v-card-actions class="justify-center">
+        <v-btn @click="toggleDelete">
+          Cancel
+        </v-btn>
+        <v-btn @click="deleteUser">
+          Confirm
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+  </div>
 </template>
 
 <script>
 import axios from 'axios';
+import FormDialog from '../components/UI/FormDialog.vue';
 
 export default {
+  components: {
+    FormDialog,
+  },
   props: ['id'],
   data(){
     return {
       selectedUser: null,
       loading: true,
       edit: false,
+      confirmDelete: false,
+      dialogText: 'Do you want to delete this user?'
     };
   },
   computed: {
@@ -85,6 +86,12 @@ export default {
     },
   },
   methods: {
+    toggleEdit(){
+      this.edit = !this.edit;      
+    },
+    toggleDelete(){
+      this.confirmDelete = !this.confirmDelete;
+    },
     async deleteUser(){
       const apiKey = process.env.VUE_APP_ID;
 
@@ -96,29 +103,13 @@ export default {
 
       this.$router.push('/usuarios');
     },
-    toggleEdit(){
-      this.edit = !this.edit;      
-    },
-    async saveChanges(){
-      const updatedUser = {
-        title: this.$refs.selectTitle.value,
-        firstName: this.$refs.inputFirstName.value,
-        lastName: this.$refs.inputLastName.value,
-        gender: this.$refs.selectGender.value,
-        dateOfBirth: this.$refs.inputBirthday.value,
-        phone: this.$refs.inputPhone.value,
-        location: {
-          street: this.$refs.inputStreet.value,
-          city: this.$refs.inputCity.value,
-          state: this.$refs.inputState.value,
-          country: this.$refs.inputCountry.value,
-        }        
-      };
-      
-
+    async saveChanges(user){          
       const apiKey = process.env.VUE_APP_ID;
+      const id = this.$route.params.id;
 
-      await axios.put('https://dummyapi.io/data/v1/user/' + this.id, updatedUser, {
+      console.log(user);
+
+      await axios.put('https://dummyapi.io/data/v1/user/' + id, user, {
         headers: {
           'app-id': apiKey,          
         }
@@ -129,10 +120,10 @@ export default {
       this.edit = false;
     },
     async getUser(){
-      this.loading = true;
-
-      const apiKey = process.env.VUE_APP_ID;
+      this.loading = true;      
       const id = this.$route.params.id;
+      const apiKey = process.env.VUE_APP_ID;
+
       // try catch
       const user = await axios.get('https://dummyapi.io/data/v1/user/' + id, {
         headers: {
@@ -149,91 +140,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.user-box{
-  display: flex;
-}
-
-.profile-picture{
-  flex: 1;
-  border-right: 3px solid #ccc;
-}
-
-.profile-picture img{
-  width: 10rem;  
-}
-
-.user-data,
-.user-data{
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  flex: 2;
-  padding-left: 1rem;
-}
-
-.edit-form{
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  flex: 2;
-}
-
-.user-data h2,
-.user-data p,
-.user-data input,
-.user-data select {
-  margin-bottom: 1rem;
-  box-sizing: border-box;
-}
-
-select{
-  border-bottom: 1px solid #000;
-}
-
-.user-data input {
-  border-bottom: 1px solid #000;
-}
-
-.edit-form form{
-  box-sizing: border-box;
-  padding: 0;
-}
-
-.action-box{
-  display: flex;
-  justify-content: flex-end;
-}
-
-.action-button{
-  margin-right: 1rem;
-}
-
-.name-box{
-  display: flex;
-}
-
-#title{
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-right: 0.5rem;
-  width: 3.5rem;
-}
-
-.input-user-name{
-  width: 100%;
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.input-user-email,
-input{
-  width: 100%;
-}
-
-.input-user-date{
-  width: 7rem;
-}
-
-</style>

@@ -4,15 +4,14 @@ import HomeView from '../views/HomeView.vue'
 import UserList from '../views/UserList.vue';
 import UserDetails from '../views/UserDetails.vue';
 import CreateUser from '../views/CreateUser.vue';
-import TesteMagno from '../views/TesteMagno.vue';
+
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    /* redirect: '/home', */
-    component: TesteMagno
+    redirect: '/home',
   },
   {
     path: '/home',

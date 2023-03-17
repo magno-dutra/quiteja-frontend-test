@@ -1,15 +1,21 @@
 <template>
-  <li>
-    <base-card>
-      <article>
-        <div class="user-info">
-          <img :src="url" alt="" />
-          <h2>{{ fullName }}</h2>
-        </div>
-        <base-button link :to="editUserLink">Ver mais...</base-button>
-      </article>
-    </base-card>
-  </li>
+  <v-card class="mx-auto" max-width="400">
+    <v-row no-gutters>
+      <v-col cols="3">
+        <v-img :src="url" aspect-ratio="1"></v-img>
+      </v-col>
+      <v-col cols="9">
+        <v-card-title class="text-h6">{{ fullName }}</v-card-title>
+        <v-card-text>
+          <p>Lorem Ipsum</p>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn :to="editUserLink" color="primary" text>Visit Profile</v-btn>
+        </v-card-actions>
+      </v-col>
+    </v-row>
+  </v-card>
 </template>
 
 <script>
@@ -27,25 +33,3 @@ export default {
 };
 </script>
 
-<style scoped>
-li{
-  list-style: none;
-  min-width: 40rem;
-}
-
-article {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-}
-
-.user-info{
-  display: flex;  
-  align-items: center;
-}
-
-.user-info img {
-  margin-right: 1rem;
-  border-radius: 50%;
-}
-</style>
